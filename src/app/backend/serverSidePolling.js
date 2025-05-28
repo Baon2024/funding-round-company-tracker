@@ -1,0 +1,236 @@
+//need to make server do polling on a set scheduale
+let { fetchRecentFundingNews, parseLLMOutput, insertToSupabase } = require("./helperFunctions");
+const { CohereClient } = require('cohere-ai');
+const { Resend } = require("resend");
+const { createClient } = require('@supabase/supabase-js');
+
+//NEXT_PUBLIC_SUPABASE_URL=https://xmcyvimeuarsivupecuv.supabase.co
+//NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtY3l2aW1ldWFyc2l2dXBlY3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1MzY2OTcsImV4cCI6MjA1MjExMjY5N30.0fsBw3u56U2Fv3yD4gtyhqJ31U-QHGr-EyJcXCRml_8
+
+const resend = new Resend('re_AxQByhrB_8TUDB3qp5iJjBKR53Lc8H6R4');
+
+const cohere = new CohereClient({
+    token: 'vjYSOGW1eb5SG7D8Sqk8cZX4ecmxpdfJC0dhbLza',
+  });
+
+//might not need to be a server? could just have code that runs every x period of time
+//and gets company names from supabase
+
+const sampleCompaniesList = [
+    "Tesla",
+    "Berkshire Hathaway",
+    "Revolut"
+]
+
+//replace this with selecting companies from supabase table
+
+async function serverSidePolling() {
+
+    const companies = []
+    //first, need to retrieve companies from supabase
+    //but can test by using hard-coded list of companies
+    const supabase = createClient(
+        'https://xmcyvimeuarsivupecuv.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtY3l2aW1ldWFyc2l2dXBlY3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1MzY2OTcsImV4cCI6MjA1MjExMjY5N30.0fsBw3u56U2Fv3yD4gtyhqJ31U-QHGr-EyJcXCRml_8'
+      );
+    
+      const { data, error } = await supabase
+      .from('companyWatchlist')
+      .select('*')  // use specific columns like 'title, description' if needed
+    
+    if (error) {
+      console.error('Error fetching data:', error)
+    } else {
+      console.log('Fetched entries:', data)
+    }
+
+    data.map(company => companies.push(company.companyName))
+
+    console.log("value of companies is now:", companies);
+
+    //return;
+    
+    let newArticles = {};
+    //function to query News Api for each company
+    for (const company of companies) {
+        const companyName = company;
+        console.log("value of companyName inside of company iteration is:", companyName);
+        const results = await fetchRecentFundingNews(company);
+        //console.log("results looks like:", results);
+
+        if (results) {
+
+        const editedResults = results.map(article => ({
+          title: article.title,
+          source: article.source.name,
+          description: article.description,
+          url: article.url  
+        }))
+        //console.log("editedResults are:", editedResults);
+        //const articles = result.articles //or whatever the response data is
+        //if result has any articles
+        //or 
+        newArticles[companyName] = editedResults;
+       }
+    }
+    console.log("value of newArticles is now:", newArticles);
+    //it looks like [Object][Object]., but that's just how Node renders complex nested objects
+    
+
+    const fundingEventCompanyArticles = {};
+
+    for (const [company, articles] of Object.entries(newArticles)) {
+        console.log(`Checking articles for: ${company}`);
+
+        // Step 1: Pre-filter using simple keyword matching
+        const fundingKeywords = ["raised", "funding", "series A", "series B", "seed", "venture capital", "round", "invested"];
+        const candidateArticles = articles.filter(article =>
+            fundingKeywords.some(keyword =>
+                article.description?.toLowerCase().includes(keyword) ||
+                article.title?.toLowerCase().includes(keyword)
+            )
+        );
+
+        console.log(`Pre-filtered ${candidateArticles.length} potential funding articles for ${company}`);
+
+    //call to LLM to check that the articles are about funding
+
+
+
+    if (candidateArticles.length > 0) {
+
+    const prompt = `You need to check whether these articles about ${company} are about a funding round: ${candidateArticles}. If an article is, return it in the same format as part of an array: with title, source, description and url. Only output JSON, no comments`
+    
+    const response1 = await cohere.chat({
+        model: 'command-r',
+        message: prompt,
+        chatHistory: [
+          {
+            role: 'SYSTEM',
+            message:
+              "Answer the user's query",
+          },
+        ],
+        temperature: 0.3,
+        maxTokens: 512,
+      });
+
+      console.log("value of checking whether any articles are about funding is:", response1);
+
+    fundingEventCompanyArticles[company] = response1.text
+    }
+    }
+    console.log("value of fundingEventCompanyArticles after llm calls are:", fundingEventCompanyArticles);
+
+    const parsedArticlesByCompany = {};
+for (const [company, rawString] of Object.entries(fundingEventCompanyArticles)) {
+  // extract JSON from the string
+  const parsed = parseLLMOutput(rawString);
+  parsedArticlesByCompany[company] = parsed;
+}
+
+    console.log("cleaned-up and parsed funding articles:", parsedArticlesByCompany);
+    
+    const hasCompanies = Object.keys(parsedArticlesByCompany).length > 0;
+console.log('has companies:', hasCompanies);
+
+    if (hasCompanies) {
+
+
+        const companiesHTML = Object.entries(parsedArticlesByCompany).map(([company, articles]) => {
+            // Map each article to HTML
+            const articlesHTML = articles.map(({ title, source, description, url }) => `
+              <li style="margin-bottom: 15px;">
+                <a href="${url}" style="font-weight: bold; color: #1a0dab; text-decoration: none;" target="_blank" rel="noopener noreferrer">${title}</a><br />
+                <small style="color: #555;">Source: ${source}</small><br />
+                <p style="margin-top: 5px;">${description}</p>
+              </li>
+            `).join('');
+          
+            return `
+              <section style="margin-bottom: 30px;">
+                <h2 style="color: #222; border-bottom: 1px solid #ccc; padding-bottom: 5px;">${company}</h2>
+                <ul style="list-style-type: disc; padding-left: 20px;">
+                  ${articlesHTML}
+                </ul>
+              </section>
+            `;
+          }).join('');
+
+
+        const emailHtml = `
+        <html>
+          <body>
+            <h1>Company Funding Update!</h1>
+            <div>${companiesHTML}</div>
+          </body>
+        </html>
+      `;
+    
+    
+        // Send the email using Resend API
+        const response = await resend.emails.send({
+          from: "Acme <onboarding@resend.dev>",
+          to: 'jb2300@cam.ac.uk', //make this dynamic? at leadt dependent on a env
+          subject: "Fundings News Updates",
+          html: emailHtml,
+        });
+        console.log("email response is:", response);
+
+    //okay, now need to add each article to funding events table
+    const articlesToInsert = Object.entries(parsedArticlesByCompany).map(([company, articles]) => {
+      return articles.map(article => [article, company])
+    })
+
+    console.log("value of articlesToInsert is:", articlesToInsert);
+
+    //now use company name in each array to retrieve correct foreign key from companies ids?
+    const articlesForInsertion = articlesToInsert.map((articleGroup) => {
+        return articleGroup.map(([articleObj, artCompany]) => {
+        const matchedCompany = data.find((company) => company.companyName === artCompany) 
+        console.log("matchedCompany is:", matchedCompany);
+        const companyId = matchedCompany.id;
+        
+        return [articleObj, artCompany, companyId];
+        
+        })
+    })
+
+    console.log("value of articlestoInsert after mapping data to get ids:", articlesForInsertion);
+
+    //Now insert new events into companyEvents table
+
+    const articlesFlat = articlesForInsertion.flatMap(articleGroup =>
+  articleGroup.map(([article, companyName, companyId]) => ({
+    title: article.title,
+    source: article.source,
+    Description: article.description,
+    url: article.url,
+    CompanyName: companyName,
+    company_id: companyId // This matches your FK in Supabase
+  }))
+);
+
+console.log("articlesFlat before insertion:", articlesFlat);
+
+    //thne insert to table
+    const result = await insertToSupabase(articlesFlat, supabase)
+    console.log("result from insertToSupabase is:", result);
+   
+
+
+    }
+
+    //and then email each to my email with resend - company name, event type, and a ready-to-copy outreach blurb
+    //and add each to supabase events table, retrieving companies table to get correct foreign keys
+
+    //remember to clean newArticles array at end, so its empty
+
+}
+
+
+
+setInterval(serverSidePolling, 1 * 60 * 1000) //should be every 5 mins
+//you to do server-side-polling at this interval
+//run once on start
+serverSidePolling()

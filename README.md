@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+
+## Funding round company tracker tool for Inaugural AI
+
+launch as usual, with npm dev/pnpm dev in root folder
+
+in two other terminals:
+  (1) cd src > app > backend, then run "node extractCompanyNames.js"
+  (2) cd src -> app -> backend, then run "node serverSidePolling.js"
+
+then, upload your csv as normal in frontend. look at company names presented, and click to add them to your watchlist
+
+
 ## Getting Started
 
 First, run the development server:
