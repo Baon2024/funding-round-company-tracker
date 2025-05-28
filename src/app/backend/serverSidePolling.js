@@ -3,6 +3,7 @@ let { fetchRecentFundingNews, parseLLMOutput, insertToSupabase } = require("./he
 const { CohereClient } = require('cohere-ai');
 const { Resend } = require("resend");
 const { createClient } = require('@supabase/supabase-js');
+const { response } = require("express");
 
 //NEXT_PUBLIC_SUPABASE_URL=https://xmcyvimeuarsivupecuv.supabase.co
 //NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtY3l2aW1ldWFyc2l2dXBlY3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1MzY2OTcsImV4cCI6MjA1MjExMjY5N30.0fsBw3u56U2Fv3yD4gtyhqJ31U-QHGr-EyJcXCRml_8
@@ -79,6 +80,7 @@ async function serverSidePolling() {
 
     const fundingEventCompanyArticles = {};
 
+
     for (const [company, articles] of Object.entries(newArticles)) {
         console.log(`Checking articles for: ${company}`);
 
@@ -92,6 +94,7 @@ async function serverSidePolling() {
         );
 
         console.log(`Pre-filtered ${candidateArticles.length} potential funding articles for ${company}`);
+        console.log("candidateArticles are:", candidateArticles);
 
     //call to LLM to check that the articles are about funding
 
@@ -99,8 +102,21 @@ async function serverSidePolling() {
 
     if (candidateArticles.length > 0) {
 
-    const prompt = `You need to check whether these articles about ${company} are about a funding round: ${candidateArticles}. If an article is, return it in the same format as part of an array: with title, source, description and url. Only output JSON, no comments`
+    //const prompt = `You need to check whether these articles about ${company} are about a funding round: ${candidateArticles}. If an article is, return it in the same format as part of an array: with title, source, description and url. DO NOT RETURN DATA OUTSIDE OF THE DATA YOU ARE GIVEN. DO NOT USE ANY DATA IN YOUR TRAINING SET.  Only output JSON, no comments`
     
+    const prompt = `
+You are given an array of news articles about the company ${company}. 
+
+For each article, determine whether it is explicitly about a funding round. 
+A funding round means the company **announced receiving money from investors**, such as a Series A, B, C, seed funding, venture capital, or strategic investment.
+
+Ignore general business news, partnerships, earnings calls, or product announcements — these do not count as funding rounds.
+
+Respond with an array of true/false values in the same order as the articles.
+ONLY return the JSON array. No comments, no article info, no explanations.
+
+${candidateArticles}`
+
     const response1 = await cohere.chat({
         model: 'command-r',
         message: prompt,
@@ -108,36 +124,52 @@ async function serverSidePolling() {
           {
             role: 'SYSTEM',
             message:
-              "Answer the user's query",
+              "Answer the user's query. Never generate fictional articles. Annotate original input only",
           },
         ],
-        temperature: 0.3,
+        temperature: 0.1,
         maxTokens: 512,
       });
 
       console.log("value of checking whether any articles are about funding is:", response1);
 
-    fundingEventCompanyArticles[company] = response1.text
+      const classifications = JSON.parse(response1.text);
+      console.log("classificatiosn are:", classifications)
+
+      const articlesToAdd = []
+
+      
+for (let i = 0; i < candidateArticles.length; i++) {
+    if (classifications[i] === true) {
+      articlesToAdd.push(candidateArticles[i]);
+    }
+  }
+
+    
+     console.log("value fo articlesToAdd:", articlesToAdd);
+    fundingEventCompanyArticles[company] = articlesToAdd
     }
     }
     console.log("value of fundingEventCompanyArticles after llm calls are:", fundingEventCompanyArticles);
 
-    const parsedArticlesByCompany = {};
+    //return;
+
+    /*const parsedArticlesByCompany = {};
 for (const [company, rawString] of Object.entries(fundingEventCompanyArticles)) {
   // extract JSON from the string
   const parsed = parseLLMOutput(rawString);
   parsedArticlesByCompany[company] = parsed;
 }
 
-    console.log("cleaned-up and parsed funding articles:", parsedArticlesByCompany);
+    console.log("cleaned-up and parsed funding articles:", parsedArticlesByCompany);*/
     
-    const hasCompanies = Object.keys(parsedArticlesByCompany).length > 0;
+    const hasCompanies = Object.keys(fundingEventCompanyArticles).length > 0;
 console.log('has companies:', hasCompanies);
 
     if (hasCompanies) {
 
 
-        const companiesHTML = Object.entries(parsedArticlesByCompany).map(([company, articles]) => {
+        const companiesHTML = Object.entries(fundingEventCompanyArticles).map(([company, articles]) => {
             // Map each article to HTML
             const articlesHTML = articles.map(({ title, source, description, url }) => `
               <li style="margin-bottom: 15px;">
@@ -178,7 +210,7 @@ console.log('has companies:', hasCompanies);
         console.log("email response is:", response);
 
     //okay, now need to add each article to funding events table
-    const articlesToInsert = Object.entries(parsedArticlesByCompany).map(([company, articles]) => {
+    const articlesToInsert = Object.entries(fundingEventCompanyArticles).map(([company, articles]) => {
       return articles.map(article => [article, company])
     })
 

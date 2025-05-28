@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createClient } from '@supabase/supabase-js';
+import RainbowBorderCards from "../../rainbow-border-cards";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -108,24 +109,18 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
         { companyEvents.length > 0 ? (
           <div>
+                <div className="container mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">
+        Most recent company funding events
+      </h1>
+      <p className="text-muted-foreground mb-8">Events with animated rainbow borders for maximum visual impact</p>
+      </div>
             { companyEvents.map((companyEvent) => {
               return (
-              <div>
-                <p>{companyEvent.title}</p>
-                <p>{companyEvent.companyName}</p>
-                <p>{companyEvent.Description}</p>
-                <p>{companyEvent.url}</p>
-                <p>{companyEvent.source}</p>
+                <div className="mb-10">
+                <RainbowBorderCards companyEvent={companyEvent} />
               </div>
             )})}
           </div>
