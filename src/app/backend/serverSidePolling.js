@@ -262,7 +262,7 @@ console.log("articlesFlat before insertion:", articlesFlat);
 
 
 
-setInterval(serverSidePolling, 1 * 60 * 1000) //should be every 5 mins
+setInterval(serverSidePolling, 5 * 60 * 1000) //should be every 5 mins
 //you to do server-side-polling at this interval
 //run once on start
 serverSidePolling()

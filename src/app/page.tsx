@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createClient } from '@supabase/supabase-js';
 import RainbowBorderCards from "../../rainbow-border-cards";
+import { FloatingWatchlistBar } from "@/components/floating-watchlist-bar";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,6 +16,7 @@ export default function Home() {
   const [ data, setData ] = useState([])
   const [ companyNames, setCompanyNames ] = useState([])
   const [ companyEvents, setCompanyEvents ] = useState([])
+  const [showBar, setShowBar] = useState(true)
 
   
 
@@ -152,7 +154,7 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
         )}
        
 
-        <div>
+        {/*<div>
           { companyNames.length > 0 ? (
             <div>
               {companyNames.map((companyName, index) =>
@@ -164,7 +166,11 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
             <p>No companies uploaded yet..</p>
           )}
           
-        </div>
+        </div>*/}
+
+        {showBar && (
+        <FloatingWatchlistBar companyNames={companyNames} onUpload={uploadCompaniesSupabase} onClose={() => setShowBar(false)} />
+      )}
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
         </div>
