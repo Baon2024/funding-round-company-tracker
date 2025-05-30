@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { createClient } from '@supabase/supabase-js';
 import RainbowBorderCards from "../../rainbow-border-cards";
 import { FloatingWatchlistBar } from "@/components/floating-watchlist-bar";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,6 +19,7 @@ export default function Home() {
   const [ companyNames, setCompanyNames ] = useState([])
   const [ companyEvents, setCompanyEvents ] = useState([])
   const [showBar, setShowBar] = useState(true)
+  const { toast } = useToast()
 
   
 
@@ -121,8 +124,16 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   ])
   .select()
 
-    console.log("data after company insertion is:", data);
-    alert(`${company} successfully added to watchlist!`)
+  console.log(`data from upload of company ${company} is: `, data)
+
+    //console.log("data after company insertion is:", data);
+    if (data) {
+      toast({
+        title: "Success! 🎉",
+          description: `Successfully added ${company} to your watchlist.`
+      })
+    //alert(`${company} successfully added to watchlist!`)
+    }
     }
   
 
@@ -133,6 +144,7 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <Toaster />
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         { companyEvents.length > 0 ? (
           <div>
@@ -181,6 +193,7 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
         
         
       </footer>
+      
     </div>
   );
 }
