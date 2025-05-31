@@ -7,6 +7,7 @@ import { FloatingWatchlistBar } from "@/components/floating-watchlist-bar";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { FloatingUploadBar } from "@/components/floatingUploadBar";
+import React from "react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,9 +17,9 @@ const supabase = createClient(
 export default function Home() {
 
 
-  const [ data, setData ] = useState([])
+  const [ data, setData ] = React.useState<File | null>(null);
   const [ companyNames, setCompanyNames ] = useState([])
-  const [ companyEvents, setCompanyEvents ] = useState([])
+  const [ companyEvents, setCompanyEvents ] = React.useState<any[]>([]);
   const { toast } = useToast()
 
   
@@ -33,8 +34,15 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 
 
-  async function handleCSVFile(e) {
-    const data = e.target.files[0]
+  async function handleCSVFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+
+    if (!files || files.length === 0) {
+      // No file selected, handle this case or just return
+      return;
+    }
+    
+    const data = files[0]
     setData(data);
 
     const formData = new FormData();
@@ -155,9 +163,9 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
       </h1>
       <p className="text-muted-foreground mb-8">Events with animated rainbow borders for maximum visual impact</p>
       </div>
-            { companyEvents.map((companyEvent) => {
+            { companyEvents.map((companyEvent, index) => {
               return (
-                <div className="mb-10">
+                <div className="mb-10" key={index} >
                 <RainbowBorderCards companyEvent={companyEvent} />
               </div>
             )})}

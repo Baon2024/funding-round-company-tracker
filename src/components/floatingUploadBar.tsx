@@ -5,9 +5,11 @@ import type React from "react"
 import { X, Upload } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
+interface FloatingUploadBarProps {
+    handleCSVFile: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  }
 
-
-export function FloatingUploadBar({ handleCSVFile}) {
+export function FloatingUploadBar({ handleCSVFile}: FloatingUploadBarProps) {
   
 
 

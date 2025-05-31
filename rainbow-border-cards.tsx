@@ -15,7 +15,7 @@ interface CompanyEvent {
 }
 
 interface CompanyEventProps {
-  companyEvent: CompanyEvent[]
+  companyEvent: CompanyEvent
 }
 
 // Color mapping for different sources (for the buttons and tags)
@@ -54,14 +54,14 @@ const getSourceColor = (source: string) => {
 
 export default function RainbowBorderCards({ companyEvent }: CompanyEventProps) {
   
-  const sourceColor = getSourceColor(companyEvent.source)
+  //const sourceColor = getSourceColor(companyEvent.source)
   return (
     <div className="space-y-8">
           <div
             className="relative p-[3px] rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 to-yellow-500 to-green-500 to-blue-500 animate-gradient-x"
           >
             <Card className="rounded-[6px] overflow-hidden h-full">
-              <CardHeader className={cn("pb-4", sourceColor.bg)}>
+              <CardHeader className={cn("pb-4")}>
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <h3 className="text-xl font-bold leading-tight">{companyEvent.title}</h3>
@@ -72,10 +72,7 @@ export default function RainbowBorderCards({ companyEvent }: CompanyEventProps) 
                   </div>
                   <div
                     className={cn(
-                      "px-3 py-1 text-xs font-medium rounded-full flex items-center",
-                      sourceColor.bg,
-                      sourceColor.text,
-                    )}
+                      "px-3 py-1 text-xs font-medium rounded-full flex items-center")}
                   >
                     <Tag className="mr-1 h-3 w-3" />
                     {companyEvent.source}
@@ -89,7 +86,7 @@ export default function RainbowBorderCards({ companyEvent }: CompanyEventProps) 
                 <div className="text-sm text-muted-foreground">Source: {companyEvent.source}</div>
                 <Button
                   asChild
-                  className={cn("transition-all", sourceColor.bg, sourceColor.text, "border-none hover:opacity-90")}
+                  className={cn("transition-all", "border-none hover:opacity-90")}
                 >
                   <Link href={companyEvent.url} target="_blank" rel="noopener noreferrer">
                     Visit Event <ExternalLink className="ml-1 h-3 w-3" />
