@@ -5,13 +5,14 @@
   "license": "ISC",
   "author": "",
   "type": "commonjs",
-  "main": "serversidepolling.js",
+  "main": "serverSidePolling.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "pnpm install && echo 'Dependencies installed'",
     "start": "node serverSidePolling.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
     "cohere-ai": "^7.17.1",
     "dotenv": "^16.5.0",
     "resend": "^4.5.1"
