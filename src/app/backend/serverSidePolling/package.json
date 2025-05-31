@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "pnpm install && echo 'Dependencies installed'",
-    "start": "node serversidepolling.js"
+    "start": "node serverSidePolling.js"
   },
   "dependencies": {
     "cohere-ai": "^7.17.1",
