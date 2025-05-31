@@ -31,7 +31,7 @@ export default function Home() {
 console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
 console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
-
+  const correctURl = process.env.MODE === 'live' ? 'https://funding-round-company-tracker-extract.onrender.com/' : 'http://localhost:5000/'
 
 
   async function handleCSVFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -48,7 +48,7 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
     const formData = new FormData();
     formData.append('file', data);
 
-    const response = await fetch('http://localhost:5000/extractCompanyNames', {
+    const response = await fetch(`${correctURl}/extractCompanyNames`, {
       method: "POST",
       body: formData
     })
