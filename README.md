@@ -26,7 +26,7 @@ Every time the user uploads new companies from a csv file to the watchlist, the 
 
 ## Video overview:
 
-[![Watch demo](public/Screenshot%202025-05-31%20233918.png)](https://www.loom.com/share/feed626da70c4e4e93ab3ae34d87d832?sid=3ff5eab6-741f-44ef-9275-c5e7bd3f2440)
+[![Watch demo](public/Untitled%20design%20(3).png)](https://www.loom.com/share/feed626da70c4e4e93ab3ae34d87d832?sid=3ff5eab6-741f-44ef-9275-c5e7bd3f2440)
 
 ## Email example
 
