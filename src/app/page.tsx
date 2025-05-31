@@ -31,7 +31,7 @@ export default function Home() {
 console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
 console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
-  const correctURl = process.env.NEXT_PUBLIC_MODE === 'live' ? 'https://funding-round-company-tracker-extract.onrender.com/' : 'http://localhost:5000/'
+  const correctURl = process.env.NEXT_PUBLIC_MODE === 'live' ? 'https://funding-round-company-tracker-extract.onrender.com' : 'http://localhost:5000'
 
 
   async function handleCSVFile(e: React.ChangeEvent<HTMLInputElement>) {
