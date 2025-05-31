@@ -17,7 +17,7 @@ const getTimestampOneHourAgo = (pollingFrequency) => {
   
 
 const fetchRecentFundingNews = async (companyName, pollingFrequency) => {
-    const from = getTimestampOneHourAgo(pollingFrequency) /*getFixedTimestamp()*/ ; //replace with getTimestampOneHourAgo()
+    const from = /*getTimestampOneHourAgo(pollingFrequency)*/ getFixedTimestamp() ; //replace with getTimestampOneHourAgo()
     const apiKey = '4828a727596840cebc75e9f7f3ae239f';
     const query = companyName;
   
@@ -25,6 +25,8 @@ const fetchRecentFundingNews = async (companyName, pollingFrequency) => {
   
     const res = await fetch(url);
     const data = await res.json();
+
+    console.log("data is: ", data)
   
     console.log(data.articles);
     return data.articles;

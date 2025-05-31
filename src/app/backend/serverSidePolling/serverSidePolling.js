@@ -283,7 +283,7 @@ console.log("articlesFlat before insertion:", articlesFlat);
 
 console.log("POLLING_FREQUENCY is: ", process.env.POLLING_FREQUENCY);
 
-setInterval(serverSidePolling, process.env.POLLING_FREQUENCY * 60 * 1000) //should be every 5 mins
+setInterval(serverSidePolling, process.env.POLLING_FREQUENCY * 60 * 1000) //
 //you to do server-side-polling at this interval
 //run once on start
 serverSidePolling()
