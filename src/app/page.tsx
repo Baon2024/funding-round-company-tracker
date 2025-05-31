@@ -9,6 +9,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { FloatingUploadBar } from "@/components/floatingUploadBar";
 import React from "react";
 
+
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!

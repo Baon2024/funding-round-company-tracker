@@ -278,3 +278,5 @@ setInterval(serverSidePolling, process.env.POLLING_FREQUENCY * 60 * 1000) //shou
 //you to do server-side-polling at this interval
 //run once on start
 serverSidePolling()
+
+module.exports = serverSidePolling;
