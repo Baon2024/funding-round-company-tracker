@@ -16,9 +16,8 @@ const getTimestampOneHourAgo = (pollingFrequency) => {
   
   
 
-const fetchRecentFundingNews = async (companyName, pollingFrequency) => {
+const fetchRecentFundingNews = async (companyName, pollingFrequency, apiKey) => {
     const from = /*getTimestampOneHourAgo(pollingFrequency)*/ getFixedTimestamp() ; //replace with getTimestampOneHourAgo()
-    const apiKey = '4828a727596840cebc75e9f7f3ae239f';
     const query = companyName;
   
     const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&from=${from}&language=en&sortBy=publishedAt&apiKey=${apiKey}`;

@@ -15,6 +15,7 @@ console.log("value of RESEND_API_KEY is: ", process.env.COHERE_CLIENT_API_TOKEN)
 console.log("value of NEXT_PUBLIC_SUPABASE_ANON_KEY is: ", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 console.log("value of NEXT_PUBLIC_SUPABASE_URL is: ", process.env.NEXT_PUBLIC_SUPABASE_URL)
 console.log("value of RESEND_ACCOUNT_EMAIL: ", process.env.RESEND_ACCOUNT_EMAIL);
+console.log("value of NEWS_API_KEY: ", process.env.NEWS_API_KEY);
 
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -67,7 +68,7 @@ async function serverSidePolling() {
     for (const company of companies) {
         const companyName = company;
         console.log("value of companyName inside of company iteration is:", companyName);
-        const results = await fetchRecentFundingNews(company, process.env.POLLING_FREQUENCY);
+        const results = await fetchRecentFundingNews(company, process.env.POLLING_FREQUENCY, process.env.NEWS_API_KEY);
         //console.log("results looks like:", results);
 
         if (results) {
