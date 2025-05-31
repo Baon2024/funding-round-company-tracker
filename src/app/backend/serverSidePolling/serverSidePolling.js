@@ -97,12 +97,21 @@ async function serverSidePolling() {
 
         // Step 1: Pre-filter using simple keyword matching
         const fundingKeywords = ["raised", "funding", "series A", "series B", "seed", "venture capital", "round", "invested"];
-        const candidateArticles = articles.filter(article =>
-            fundingKeywords.some(keyword =>
-                article.description?.toLowerCase().includes(keyword) ||
-                article.title?.toLowerCase().includes(keyword)
-            )
-        );
+        
+
+        const candidateArticles = articles.filter(article => {
+          const title = article.title?.toLowerCase() || "";
+          const description = article.description?.toLowerCase() || "";
+          const lowerCompany = company.toLowerCase();
+  
+          const mentionsFunding = fundingKeywords.some(keyword =>
+              title.includes(keyword) || description.includes(keyword)
+          );
+  
+          const mentionsCompanyInTitle = title.includes(lowerCompany);
+  
+          return mentionsFunding && mentionsCompanyInTitle;
+        });
 
         console.log(`Pre-filtered ${candidateArticles.length} potential funding articles for ${company}`);
         console.log("candidateArticles are:", candidateArticles);
@@ -121,7 +130,7 @@ You are given an array of news articles about the company ${company}.
 For each article, determine whether it is explicitly about a funding round. 
 A funding round means the company **announced receiving money from investors**, such as a Series A, B, C, seed funding, venture capital, or strategic investment.
 
-Ignore general business news, partnerships, earnings calls, or product announcements — these do not count as funding rounds.
+IMPORTANT - Ignore general business news, partnerships, earnings calls, or product announcements — these do not count as funding rounds.
 
 Respond with an array of true/false values in the same order as the articles.
 ONLY return the JSON array. No comments, no article info, no explanations.
