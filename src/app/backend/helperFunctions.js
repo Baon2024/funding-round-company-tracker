@@ -17,7 +17,7 @@ const getTimestampOneHourAgo = () => {
   
 
 const fetchRecentFundingNews = async (companyName) => {
-    const from = getTimestampOneHourAgo() //getFixedTimestamp() ; //replace with getTimestampOneHourAgo()
+    const from = /*getTimestampOneHourAgo()*/ getFixedTimestamp() ; //replace with getTimestampOneHourAgo()
     const apiKey = '4828a727596840cebc75e9f7f3ae239f';
     const query = companyName;
   

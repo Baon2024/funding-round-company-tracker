@@ -8,7 +8,7 @@ interface FloatingWatchlistBarProps {
   onClose?: () => void
 }
 
-export function FloatingWatchlistBar({ companyNames = [], onUpload, onClose }: FloatingWatchlistBarProps) {
+export function FloatingWatchlistBar({ companyNames = [], onUpload }: FloatingWatchlistBarProps) {
   const uploadCompaniesSupabase = () => {
     // Your upload logic here
     console.log("Uploading companies to watchlist:", companyNames)
@@ -42,12 +42,7 @@ export function FloatingWatchlistBar({ companyNames = [], onUpload, onClose }: F
               )}
             </div>
 
-            {onClose && (
-              <Button variant="ghost" size="sm" onClick={onClose} className="ml-4 p-1 h-8 w-8">
-                <X className="h-4 w-4" />
-                <span className="sr-only">Close</span>
-              </Button>
-            )}
+           
           </div>
         </div>
       </div>

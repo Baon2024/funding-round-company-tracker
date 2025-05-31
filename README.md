@@ -6,8 +6,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 launch as usual, with npm dev/pnpm dev in root folder
 
 in two other terminals:
-  (1) cd src > app > backend, then run "node extractCompanyNames.js"
-  (2) cd src -> app -> backend, then run "node serverSidePolling.js"
+  (1) cd src > app > backend > expressServer, then run "node extractCompanyNames.js"
+  (2) cd src -> app > backend > serverSidePolling, then run "node serverSidePolling.js"
+
+serverSidePolling requires your own api keys for: Resend api key, cohere client api token (its a free model), NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (last two can easily be found in your supabase 'connect to your project' pop-up box). RESEND_ACCOUNT_EMAIL should be the account you want the email notifications to be send to (and if its the same as your email registered with Resend, it's free)
 
 then, upload your csv as normal in frontend. look at company names presented, and click to add them to your watchlist
 

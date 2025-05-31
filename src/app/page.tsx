@@ -6,6 +6,7 @@ import RainbowBorderCards from "../../rainbow-border-cards";
 import { FloatingWatchlistBar } from "@/components/floating-watchlist-bar";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { FloatingUploadBar } from "@/components/floatingUploadBar";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,7 +19,6 @@ export default function Home() {
   const [ data, setData ] = useState([])
   const [ companyNames, setCompanyNames ] = useState([])
   const [ companyEvents, setCompanyEvents ] = useState([])
-  const [showBar, setShowBar] = useState(true)
   const { toast } = useToast()
 
   
@@ -144,6 +144,7 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <FloatingUploadBar handleCSVFile={handleCSVFile} />
       <Toaster />
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         { companyEvents.length > 0 ? (
@@ -180,16 +181,16 @@ console.log('ANON KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
           
         </div>*/}
 
-        {showBar && (
-        <FloatingWatchlistBar companyNames={companyNames} onUpload={uploadCompaniesSupabase} onClose={() => setShowBar(false)} />
-      )}
+        
+        <FloatingWatchlistBar companyNames={companyNames} onUpload={uploadCompaniesSupabase} />
+      
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
         </div>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <label>Upload Company CSV file</label>
-        <input type="file" accept=".csv,.xls, xlsx" onChange={(e) => handleCSVFile(e)} />
+        {/*<label>Upload Company CSV file</label>
+        <input type="file" accept=".csv,.xls, xlsx" onChange={(e) => handleCSVFile(e)} />*/}
         
         
       </footer>

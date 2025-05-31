@@ -3,15 +3,24 @@ let { fetchRecentFundingNews, parseLLMOutput, insertToSupabase } = require("./he
 const { CohereClient } = require('cohere-ai');
 const { Resend } = require("resend");
 const { createClient } = require('@supabase/supabase-js');
-const { response } = require("express");
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 //NEXT_PUBLIC_SUPABASE_URL=https://xmcyvimeuarsivupecuv.supabase.co
 //NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtY3l2aW1ldWFyc2l2dXBlY3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1MzY2OTcsImV4cCI6MjA1MjExMjY5N30.0fsBw3u56U2Fv3yD4gtyhqJ31U-QHGr-EyJcXCRml_8
 
-const resend = new Resend('re_AxQByhrB_8TUDB3qp5iJjBKR53Lc8H6R4');
+console.log("value of RESEND_API_KEY is: ", process.env.RESEND_API_KEY);
+console.log("value of RESEND_API_KEY is: ", process.env.COHERE_CLIENT_API_TOKEN);
+console.log("value of NEXT_PUBLIC_SUPABASE_ANON_KEY is: ", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+console.log("value of NEXT_PUBLIC_SUPABASE_URL is: ", process.env.NEXT_PUBLIC_SUPABASE_URL)
+console.log("value of RESEND_ACCOUNT_EMAIL: ", process.env.RESEND_ACCOUNT_EMAIL);
+
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const cohere = new CohereClient({
-    token: 'vjYSOGW1eb5SG7D8Sqk8cZX4ecmxpdfJC0dhbLza',
+    token: process.env.COHERE_CLIENT_API_TOKEN,
   });
 
 //might not need to be a server? could just have code that runs every x period of time
@@ -25,14 +34,16 @@ const sampleCompaniesList = [
 
 //replace this with selecting companies from supabase table
 
+
+
 async function serverSidePolling() {
 
     const companies = []
     //first, need to retrieve companies from supabase
     //but can test by using hard-coded list of companies
     const supabase = createClient(
-        'https://xmcyvimeuarsivupecuv.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtY3l2aW1ldWFyc2l2dXBlY3V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY1MzY2OTcsImV4cCI6MjA1MjExMjY5N30.0fsBw3u56U2Fv3yD4gtyhqJ31U-QHGr-EyJcXCRml_8'
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
       );
     
       const { data, error } = await supabase
@@ -202,8 +213,8 @@ console.log('has companies:', hasCompanies);
     
         // Send the email using Resend API
         const response = await resend.emails.send({
-          from: "Acme <onboarding@resend.dev>",
-          to: 'jb2300@cam.ac.uk', //make this dynamic? at leadt dependent on a env
+          from: "Acme <onboarding@resend.dev>", //this email can be changed, but lets you get free api usage
+          to: process.env.RESEND_ACCOUNT_EMAIL, //make this dynamic? at leadt dependent on a env
           subject: "Fundings News Updates",
           html: emailHtml,
         });
