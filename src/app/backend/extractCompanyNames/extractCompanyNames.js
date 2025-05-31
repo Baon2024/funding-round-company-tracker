@@ -51,5 +51,5 @@ app.post('/extractCompanyNames', upload.single('file'), (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on ${PORT}`);
 });
