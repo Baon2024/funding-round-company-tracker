@@ -30,7 +30,7 @@ Every time the user uploads new companies from a csv file to the watchlist, the 
 
 ## Email example
 
-(public/Screenshot 2025-05-31 235900.png)
+![Email screenshot](public/Screenshot%202025-05-31%20235900.png)
 
 
 ## Getting Started
