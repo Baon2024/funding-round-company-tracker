@@ -4,9 +4,9 @@
 
 
 
-const getTimestampOneHourAgo = () => {
+const getTimestampOneHourAgo = (pollingFrequency) => {
     const now = new Date();
-    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const oneHourAgo = new Date(now.getTime() - pollingFrequency * 60 * 1000);
     return oneHourAgo.toISOString(); // News API expects ISO 8601
   };
 
@@ -16,8 +16,8 @@ const getTimestampOneHourAgo = () => {
   
   
 
-const fetchRecentFundingNews = async (companyName) => {
-    const from = /*getTimestampOneHourAgo()*/ getFixedTimestamp() ; //replace with getTimestampOneHourAgo()
+const fetchRecentFundingNews = async (companyName, pollingFrequency) => {
+    const from = getTimestampOneHourAgo(pollingFrequency) //getFixedTimestamp() ; //replace with getTimestampOneHourAgo()
     const apiKey = '4828a727596840cebc75e9f7f3ae239f';
     const query = companyName;
   

@@ -67,7 +67,7 @@ async function serverSidePolling() {
     for (const company of companies) {
         const companyName = company;
         console.log("value of companyName inside of company iteration is:", companyName);
-        const results = await fetchRecentFundingNews(company);
+        const results = await fetchRecentFundingNews(company, process.env.POLLING_FREQUENCY);
         //console.log("results looks like:", results);
 
         if (results) {
@@ -205,6 +205,7 @@ console.log('has companies:', hasCompanies);
         <html>
           <body>
             <h1>Company Funding Update!</h1>
+            <p>Hey CSM, here are the latest funding rounds articles:</p>
             <div>${companiesHTML}</div>
           </body>
         </html>
@@ -271,9 +272,9 @@ console.log("articlesFlat before insertion:", articlesFlat);
 
 }
 
+console.log("POLLING_FREQUENCY is: ", process.env.POLLING_FREQUENCY);
 
-
-setInterval(serverSidePolling, 5 * 60 * 1000) //should be every 5 mins
+setInterval(serverSidePolling, process.env.POLLING_FREQUENCY * 60 * 1000) //should be every 5 mins
 //you to do server-side-polling at this interval
 //run once on start
 serverSidePolling()

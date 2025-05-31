@@ -9,9 +9,20 @@ in two other terminals:
   (1) cd src > app > backend > expressServer, then run "node extractCompanyNames.js"
   (2) cd src -> app > backend > serverSidePolling, then run "node serverSidePolling.js"
 
-serverSidePolling requires your own api keys for: Resend api key, cohere client api token (its a free model), NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (last two can easily be found in your supabase 'connect to your project' pop-up box). RESEND_ACCOUNT_EMAIL should be the account you want the email notifications to be send to (and if its the same as your email registered with Resend, it's free)
+serverSidePolling requires your own api keys for: Resend api key, cohere client api token (its a free model), NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (last two can easily be found in your supabase 'connect to your project' pop-up box). RESEND_ACCOUNT_EMAIL should be the account you want the email notifications to be send to (and if its the same as your email registered with Resend, it's free). POLLING_FREQUENCY is the env for how often you want to check for new funding articles for the companies on the watchlist. it should be a number: 60 for every hour, 30 for every 30 mins etc cetera.
+
 
 then, upload your csv as normal in frontend. look at company names presented, and click to add them to your watchlist
+
+## How It Works
+
+this project uses the News Api to retrieve new article about funding round events for the companies in the watchlist, every hour (adjustable).
+
+if there are, they will be send to the CMS' email (Resend account email env value). The app's main page will show up to 10 most recent of these articles.
+
+Every time the user uploads new companies from a csv file to the watchlist, the existing companies and funding round articles are cleaned. 
+
+
 
 
 ## Getting Started
