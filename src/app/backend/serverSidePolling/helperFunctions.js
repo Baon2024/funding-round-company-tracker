@@ -11,13 +11,13 @@ const getTimestampOneHourAgo = (pollingFrequency) => {
   };
 
   const getFixedTimestamp = () => {
-    return new Date('2025-05-27T00:00:00Z').toISOString();
+    return new Date('2025-05-03T00:00:00Z').toISOString();
   };
   
   
 
 const fetchRecentFundingNews = async (companyName, pollingFrequency, apiKey) => {
-    const from = /*getTimestampOneHourAgo(pollingFrequency)*/ getFixedTimestamp() ; //replace with getTimestampOneHourAgo()
+    const from = /*getTimestampOneHourAgo(pollingFrequency);*/ getFixedTimestamp(); //replace with getTimestampOneHourAgo()
     const query = companyName;
   
     const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&from=${from}&language=en&sortBy=publishedAt&apiKey=${apiKey}`;

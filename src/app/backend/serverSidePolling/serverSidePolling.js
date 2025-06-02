@@ -189,10 +189,53 @@ console.log('has companies:', hasCompanies);
 
     if (hasCompanies) {
 
+      await new Promise(resolve => setTimeout(resolve, 60000));
 
-        const companiesHTML = Object.entries(fundingEventCompanyArticles).map(([company, articles]) => {
+      const entriesWithArticles = Object.entries(fundingEventCompanyArticles).filter(
+        ([_, articles]) => articles.length > 0
+      );
+      
+      const articlesForHTML = await Promise.all(
+        entriesWithArticles.map(async ([company, articles]) => {
+          await new Promise(resolve => setTimeout(resolve, 10000));
+      
+          const prompt = `Construct an outreach blurb for the company ${company}. You are Mirror Ai... ${articles}`;
+      
+          const response1 = await cohere.chat({
+            model: 'command-r',
+            message: prompt,
+            chatHistory: [
+              {
+                role: 'SYSTEM',
+                message:
+                  "Generate an outrearch blurb, as the company Mirror: Ai for revenue retention",
+              },
+            ],
+            temperature: 0.1,
+            maxTokens: 512,
+          });
+      
+          const blurb = response1.text;
+          console.log("blurb is", blurb);
+      
+          return {
+            company,
+            articles,
+            outreachBlurb: blurb
+          };
+        })
+      );
+
+        console.log("value of articlesForHtml after new code is:", articlesForHTML);
+
+
+        const companiesHTML = articlesForHTML.map(({ company, articles, outreachBlurb }) => {
+
+
+
             // Map each article to HTML
-            const articlesHTML = articles.map(({ title, source, description, url }) => `
+            const articlesHTML = articles.map(({ title, source, description, url }) =>  
+              `
               <li style="margin-bottom: 15px;">
                 <a href="${url}" style="font-weight: bold; color: #1a0dab; text-decoration: none;" target="_blank" rel="noopener noreferrer">${title}</a><br />
                 <small style="color: #555;">Source: ${source}</small><br />
@@ -206,6 +249,8 @@ console.log('has companies:', hasCompanies);
                 <ul style="list-style-type: disc; padding-left: 20px;">
                   ${articlesHTML}
                 </ul>
+                 <h3>Outreach Blurb</h3>
+                <p>${outreachBlurb}</p>
               </section>
             `;
           }).join('');
